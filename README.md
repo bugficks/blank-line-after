@@ -1,7 +1,21 @@
-# blank-line-after-blocks
+# Fork Notice
+This fork enhances the original `blank-line-after` tool. It introduces command-line options (`--after`, `--not-after`, `--compound`) for granular control over block formatting and extends support to `def`, `class`, `match` statements, and docstrings.
 
-A Python formatter to automatically add blank lines after if/for/while/with/try
-blocks to improve code readability.
+**Breaking Changes:**
+*   The default behavior now adds blank lines after `docstring`, `def`, `class`, and `match` blocks, in addition to the original `if`, `for`, `while`, `with`, and `try` blocks.
+*   The default behavior for compound statements (like `if/elif/else`) has changed to add blank lines between each part for consistent spacing.
+
+To restore the original behavior, use the following command:
+```bash
+blank-line-after --not-after docstring,def,class,match --compound elif,else,except,finally <files>
+```
+
+---
+# blank-line-after
+
+A Python formatter to automatically add blank lines after code blocks to improve
+readability. Fully customizable with `--after`, `--not-after`, and `--compound`
+options.
 
 <!--TOC-->
 
@@ -12,15 +26,16 @@ ______________________________________________________________________
 - [1. Installation](#1-installation)
 - [2. Usage](#2-usage)
   - [2.1. Command Line](#21-command-line)
-  - [2.2. Pre-commit Hook](#22-pre-commit-hook)
-    - [2.2.1. Pre-commit with exclude patterns](#221-pre-commit-with-exclude-patterns)
-  - [2.3. Configuration File](#23-configuration-file)
+  - [2.2. Customization Options](#22-customization-options)
+  - [2.3. Pre-commit Hook](#23-pre-commit-hook)
+  - [2.4. Configuration File](#24-configuration-file)
 - [3. What it does](#3-what-it-does)
 - [4. Examples](#4-examples)
-  - [4.1. Basic if and for blocks](#41-basic-if-and-for-blocks)
-  - [4.2. Try/except blocks with context managers](#42-tryexcept-blocks-with-context-managers)
-  - [4.3. Nested blocks in class methods](#43-nested-blocks-in-class-methods)
-  - [4.4. Compound blocks stay tight (no blank line before else/elif/except/finally)](#44-compound-blocks-stay-tight-no-blank-line-before-elseelifexceptfinally)
+  - [4.1. Default behavior](#41-default-behavior)
+  - [4.2. Custom block types with --after](#42-custom-block-types-with---after)
+  - [4.3. Exclude specific blocks with --not-after](#43-exclude-specific-blocks-with---not-after)
+  - [4.4. Control compound statement spacing with --compound](#44-control-compound-statement-spacing-with---compound)
+  - [4.5. Add blank lines after docstrings](#45-add-blank-lines-after-docstrings-with---after-docstring)
 
 ______________________________________________________________________
 
@@ -29,7 +44,7 @@ ______________________________________________________________________
 ## 1. Installation
 
 ```bash
-pip install blank-line-after-blocks
+pip install blank-line-after
 ```
 
 ## 2. Usage
@@ -37,51 +52,80 @@ pip install blank-line-after-blocks
 ### 2.1. Command Line
 
 ```bash
-# Format Python files
-blank-line-after-blocks file1.py file2.py
-
-# Format with exclude patterns (regex - use | for multiple patterns)
-blank-line-after-blocks --exclude "tests/|_generated\.py$" src/
+# Format Python files (default: adds blank lines after if/for/while/with/try)
+blank-line-after file1.py file2.py
 
 # Format Jupyter notebooks
-blank-line-after-blocks-jupyter notebook1.ipynb notebook2.ipynb
+blank-line-after-jupyter notebook1.ipynb notebook2.ipynb
 
-# Format notebooks with exclude patterns (regex)
-blank-line-after-blocks-jupyter --exclude "notebooks/generated/" notebooks/
+# Format with exclude patterns (regex - use | for multiple patterns)
+blank-line-after --exclude "tests/|_generated\.py$" src/
 ```
 
-### 2.2. Pre-commit Hook
+### 2.2. Customization Options
+
+Control which blocks get blank lines and how compound statements are formatted:
+
+```bash
+# Only add blank lines after specific block types
+blank-line-after --after if,for file.py
+blank-line-after --after def,class file.py
+
+# Add blank lines after ALL blocks EXCEPT specified ones
+blank-line-after --not-after if,for file.py
+
+# Control compound statement spacing (default: consistent spacing everywhere)
+# Use --compound to keep certain compound statements tight
+blank-line-after --compound elif,else file.py
+blank-line-after --compound except,finally file.py
+
+# Combine options (--after/--not-after are mutually exclusive)
+blank-line-after --after def,class --compound elif,else file.py
+```
+
+**Available block types for `--after`/`--not-after`:**
+- `if`, `for`, `while`, `with`, `try` (default blocks)
+- `def` (functions), `class` (classes)
+- `match` (Python 3.10+ match statements)
+- `docstring` (module/function/class docstrings)
+
+**Available compound headers for `--compound`:**
+- `elif`, `else`, `except`, `finally`
+
+### 2.3. Pre-commit Hook
 
 Add this to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
-  - repo: https://github.com/jsh9/blank-line-after-blocks
+  - repo: https://github.com/jsh9/blank-line-after
     rev: <LATEST_TAG>
     hooks:
-      - id: blank-line-after-blocks
-      - id: blank-line-after-blocks-jupyter
+      - id: blank-line-after
+      - id: blank-line-after-jupyter
 ```
 
-#### 2.2.1. Pre-commit with exclude patterns
+You can also pass customization options to pre-commit hooks:
 
 ```yaml
 repos:
-  - repo: https://github.com/jsh9/blank-line-after-blocks
+  - repo: https://github.com/jsh9/blank-line-after
     rev: <LATEST_TAG>
     hooks:
-      - id: blank-line-after-blocks
-        args: ["--exclude", "tests/|_generated\.py$"]
-      - id: blank-line-after-blocks-jupyter
+      - id: blank-line-after
+        args: ["--after", "def,class", "--compound", "elif,else"]
+      - id: blank-line-after
+        args: ["--exclude", r"tests/|_generated\.py$"]
+      - id: blank-line-after-jupyter
         args: ["--exclude", "notebooks/generated/"]
 ```
 
-### 2.3. Configuration File
+### 2.4. Configuration File
 
 You can also configure exclude patterns in `pyproject.toml`:
 
 ```toml
-[tool.blank-line-after-blocks]
+[tool.blank-line-after]
 exclude = [
     "tests/",            # Exclude all files in tests directory
     "_generated\.py$",   # Exclude files ending with _generated.py
@@ -95,83 +139,153 @@ settings.
 
 ## 3. What it does
 
-This tool automatically adds one blank line after the end of:
+By default, this tool adds one blank line after the end of `if`, `for`, `while`,
+`with`, and `try` blocks to improve code readability.
 
-- `if` statements
-- `for` loops
-- `while` loops
-- `with` statements
-- `try`/`except`/`finally` blocks
+**Key features:**
+- **Customizable**: Use `--after` to specify exactly which blocks to format
+- **Flexible**: Use `--not-after` to format all blocks except specific ones
+- **Consistent spacing**: By default, adds blank lines after each branch in
+  compound statements (if/elif/else, try/except/finally) for consistency
+- **Compact mode**: Use `--compound` to keep compound statements tightly grouped
 
-This improves code readability by providing visual separation between blocks
-and subsequent code.
+The tool supports these block types:
+- Control flow: `if`, `for`, `while`, `with`, `try`
+- Definitions: `def` (functions), `class` (classes)
+- Pattern matching: `match` (Python 3.10+)
+- Documentation: `docstring` (module/function/class docstrings)
 
 ## 4. Examples
 
-### 4.1. Basic if and for blocks
+### 4.1. Default behavior
+
+Default adds blank lines after `if`, `for`, `while`, `with`, `try` blocks with
+consistent spacing (blank lines after each branch):
 
 ```diff
-  if condition:
-      do_something()
+  if a == 'a':
+      depth += 1
 +
-  next_statement()
+  elif b == 'b':
+      depth -= 1
++
+  else:
+      depth = 0
++
+  j = 1
+```
 
+```diff
   for item in items:
       process(item)
 +
   final_step()
-
-  if a > 3:
-      print('a > 3')
-      # Already a comment; no new line added
-  a += 2
 ```
 
-### 4.2. Try/except blocks with context managers
-
 ```diff
-  def process_files(filenames):
-      results = []
-      for filename in filenames:
-          try:
-              with open(filename) as f:
-                  data = json.load(f)
+  try:
+      risky()
 +
-              results.append(data)
-          except FileNotFoundError:
-              print(f'File {filename} not found')
-          except json.JSONDecodeError:
-              print(f'Invalid JSON in {filename}')
+  except ValueError:
+      handle()
 +
-      return results
+  finally:
+      cleanup()
++
+  done()
 ```
 
-### 4.3. Nested blocks in class methods
+### 4.2. Custom block types with --after
+
+Only add blank lines after specific block types:
+
+```bash
+blank-line-after --after def,class file.py
+```
 
 ```diff
-  class TestClass:
+  if x > 5:
+      print("hello")
+  def my_func():
+      return 42
++
+  class MyClass:
+      pass
++
+  print("world")
+```
+
+### 4.3. Exclude specific blocks with --not-after
+
+Add blank lines after ALL blocks EXCEPT the specified ones:
+
+```bash
+blank-line-after --not-after if,for file.py
+```
+
+```diff
+  if x > 5:
+      print("hello")
+  def my_func():
+      return 42
++
+  for i in range(10):
+      print(i)
+  while True:
+      break
++
+  print("world")
+```
+
+### 4.4. Control compound statement spacing with --compound
+
+Keep compound statements tightly grouped:
+
+```bash
+blank-line-after --compound elif,else file.py
+```
+
+```diff
+  if a == 'a':
+      depth += 1
+  elif b == 'b':
+      depth -= 1
+  else:
+      depth = 0
++
+  j = 1
+```
+
+```bash
+blank-line-after --compound except,finally file.py
+```
+
+```diff
+  try:
+      risky()
+  except ValueError:
+      handle()
+  finally:
+      cleanup()
++
+  done()
+```
+
+### 4.5. Add blank lines after docstrings with --after docstring
+
+```bash
+blank-line-after --after docstring file.py
+```
+
+```diff
+  def my_func():
+      """Function docstring."""
++
+      return 42
+
+  class MyClass:
+      """Class docstring."""
++
       def method(self):
-          try:
-              if self.condition():
-                  with self.get_context():
-                      self.do_work()
-+
-                  self.cleanup()
-          except Exception as e:
-              self.handle_error(e)
-+
-          print('method complete')
-```
-
-### 4.4. Compound blocks stay tight (no blank line before else/elif/except/finally)
-
-If a block ends right before the second part of compound blocks (if/else,
-try/except, etc.), no blank line is added:
-
-```python
-for item in items:
-    if found(item):
-        break
-else:
-    not_found()
+          pass
 ```

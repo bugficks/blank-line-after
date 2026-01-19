@@ -1,12 +1,14 @@
 """Tests for helper.py module."""
 
+from pathlib import Path
+
 import pytest
 
-from blank_line_after_blocks.helper import fix_src
+from blank_line_after.helper import fix_src
 
 
 @pytest.mark.parametrize(
-    'input_code,expected_output',
+    ('input_code', 'expected_output'),
     [
         # Test if statement
         (
@@ -74,7 +76,9 @@ from blank_line_after_blocks.helper import fix_src
         ),
     ],
 )
-def test_fix_src_adds_blank_lines(input_code, expected_output):
+def test_fix_src_adds_blank_lines(
+        input_code: str, expected_output: str
+) -> None:
     """Test that fix_src adds blank lines after blocks correctly."""
     result = fix_src(input_code)
     assert result == expected_output
@@ -92,7 +96,7 @@ def test_fix_src_adds_blank_lines(input_code, expected_output):
         'class MyClass:\n    def method(self):\n        pass\n\nother_code()',
     ],
 )
-def test_fix_src_no_changes_needed(input_code):
+def test_fix_src_no_changes_needed(input_code: str) -> None:
     """Test that fix_src doesn't modify code that doesn't need changes."""
     result = fix_src(input_code)
     assert result == input_code
@@ -109,14 +113,14 @@ def test_fix_src_no_changes_needed(input_code):
         'def function(\n    # incomplete function definition',
     ],
 )
-def test_fix_src_handles_syntax_errors(input_code):
+def test_fix_src_handles_syntax_errors(input_code: str) -> None:
     """Test that fix_src handles syntax errors gracefully."""
     # Should return original code unchanged when there are syntax errors
     result = fix_src(input_code)
     assert result == input_code
 
 
-def test_complex_nested_structure():
+def test_complex_nested_structure() -> None:
     """Test complex nested structure with multiple block types."""
     input_code = """if condition:
     for item in items:
@@ -149,7 +153,7 @@ final_if_step()"""
     assert result == expected
 
 
-def test_blocks_at_end_of_file():
+def test_blocks_at_end_of_file() -> None:
     """Test that blocks at the end of file are handled correctly."""
     input_code = 'if condition:\n    do_something()'
     expected = input_code  # No next line, so no blank line should be added
@@ -159,7 +163,7 @@ def test_blocks_at_end_of_file():
 
 
 @pytest.mark.parametrize(
-    'input_code,expected_output',
+    ('input_code', 'expected_output'),
     [
         # Test if-elif-else
         (
@@ -168,8 +172,8 @@ def test_blocks_at_end_of_file():
                 '    action2()\nelse:\n    action3()\nafter_block()'
             ),
             (
-                'if condition1:\n    action1()\nelif condition2:\n'
-                '    action2()\nelse:\n    action3()\n\nafter_block()'
+                'if condition1:\n    action1()\n\nelif condition2:\n'
+                '    action2()\n\nelse:\n    action3()\n\nafter_block()'
             ),
         ),
         # Test try-except-finally
@@ -180,10 +184,9 @@ def test_blocks_at_end_of_file():
                 '    handle_general()\nfinally:\n    cleanup()\nafter_try()'
             ),
             (
-                'try:\n    risky()\nexcept ValueError:\n'
+'try:\n    risky()\nexcept ValueError:\n'
                 '    handle_value_error()\nexcept Exception:\n'
-                '    handle_general()\nfinally:\n    cleanup()\n\nafter_try()'
-            ),
+                '    handle_general()\nfinally:\n    cleanup()\n\nafter_try()'            ),
         ),
         # Test for-else
         (
@@ -192,19 +195,19 @@ def test_blocks_at_end_of_file():
                 'else:\n    not_found()\nafter_for()'
             ),
             (
-                'for item in items:\n    if found(item):\n        break\n'
+                'for item in items:\n    if found(item):\n        break\n\n'
                 'else:\n    not_found()\n\nafter_for()'
             ),
         ),
     ],
 )
-def test_compound_statements(input_code, expected_output):
+def test_compound_statements(input_code: str, expected_output: str) -> None:
     """Test compound statements (if-elif-else, try-except-finally, etc.)."""
     result = fix_src(input_code)
     assert result == expected_output
 
 
-def test_indented_blocks():
+def test_indented_blocks() -> None:
     """
     Test that indented blocks within functions/classes are handled correctly.
     """
@@ -232,7 +235,7 @@ def test_indented_blocks():
     assert result == expected
 
 
-def test_empty_blocks():
+def test_empty_blocks() -> None:
     """Test blocks with only pass statements."""
     input_code = """if condition:
     pass
@@ -256,27 +259,21 @@ after_loop()"""
     assert result == expected
 
 
-def test_flake8_clean_block_cases():
+def test_flake8_clean_block_cases() -> None:
     """
     Test comprehensive cases from flake8-clean-block project using test data
     files.
     """
-    # Read the before and after files
-    import os
-
-    test_dir = os.path.dirname(os.path.abspath(__file__))
-    before_file = os.path.join(
-        test_dir, 'test_data', 'before', 'flake8_clean_block_cases.py'
+    test_dir = Path(__file__).resolve().parent
+    before_file = (
+        test_dir / 'test_data' / 'before' / 'flake8_clean_block_cases.py'
     )
-    after_file = os.path.join(
-        test_dir, 'test_data', 'after', 'flake8_clean_block_cases.py'
+    after_file = (
+        test_dir / 'test_data' / 'after' / 'flake8_clean_block_cases.py'
     )
 
-    with open(before_file) as f:
-        input_code = f.read()
-
-    with open(after_file) as f:
-        expected_output = f.read()
+    input_code = before_file.read_text()
+    expected_output = after_file.read_text()
 
     # Apply the fix_src function to the input
     result = fix_src(input_code)

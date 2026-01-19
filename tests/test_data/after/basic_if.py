@@ -24,6 +24,7 @@ def main():
     for item in items:
         if item % 2 == 0:
             print(f'Even: {item}')
+
         else:
             print(f'Odd: {item}')
 

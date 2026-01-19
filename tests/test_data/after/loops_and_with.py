@@ -1,4 +1,5 @@
 """Test case for loops and with statements."""
+
 import json
 
 def process_files(filenames):
@@ -24,6 +25,7 @@ def count_items(items, threshold=10):
                 print(f'Found item {item} > {count}')
                 count += 1
                 break
+
         else:
             print('No more items found')
             break

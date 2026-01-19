@@ -2,6 +2,9 @@ import json
 import sys
 from pathlib import Path
 
+# Add the parent directory to the path to allow relative imports
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import click
 from jupyter_notebook_parser import (
     JupyterNotebookParser,
@@ -10,9 +13,8 @@ from jupyter_notebook_parser import (
     reconstruct_source,
 )
 
-import blank_line_after_blocks.helper as helper
-from blank_line_after_blocks import __version__
-from blank_line_after_blocks.base_fixer import BaseFixer
+from blank_line_after import __version__, helper
+from blank_line_after.base_fixer import BaseFixer
 
 
 class JupyterNotebookFixer(BaseFixer):
@@ -22,16 +24,20 @@ class JupyterNotebookFixer(BaseFixer):
             self,
             path: str,
             exclude_pattern: str = r'\.git|\.tox|\.pytest_cache',
+            after: tuple[str, ...] | None = None,
+            not_after: tuple[str, ...] | None = None,
+            compound: tuple[str, ...] = (),
     ) -> None:
         super().__init__(path=path, exclude_pattern=exclude_pattern)
+        self.after = after
+        self.not_after = not_after
+        self.compound = compound
 
     def fix_one_directory_or_one_file(self) -> int:
         """
         Fix formatting in a single file or all Jupyter notebook files in a
         directory.
         """
-        from pathlib import Path
-
         path_obj = Path(self.path)
 
         if path_obj.is_file():
@@ -60,8 +66,8 @@ class JupyterNotebookFixer(BaseFixer):
             code_cells = parsed.get_code_cells()
             code_cell_indices = parsed.get_code_cell_indices()
             code_cell_sources = parsed.get_code_cell_sources()
-        except Exception as exc:
-            print(f'Error reading {filename}: {str(exc)}', file=sys.stderr)
+        except (NameError, ValueError) as exc:
+            print(f'Error reading {filename}: {exc!s}', file=sys.stderr)
             return 1
         else:
             ret_val = 0
@@ -73,7 +79,12 @@ class JupyterNotebookFixer(BaseFixer):
                 source: SourceCodeContainer = code_cell_sources[i]
                 source_without_magic: str = source.source_without_magic
                 magics: dict[str, str] = source.magics
-                fixed: str = helper.fix_src(source_code=source_without_magic)
+                fixed: str = helper.fix_src(
+                    source_code=source_without_magic,
+                    after=self.after,
+                    not_after=self.not_after,
+                    compound=self.compound,
+                )
 
                 if fixed != source_without_magic:
                     ret_val = 1
@@ -85,7 +96,7 @@ class JupyterNotebookFixer(BaseFixer):
 
             if ret_val == 1:
                 print(f'Rewriting {filename}', file=sys.stderr)
-                with open(filename, 'w') as fp:
+                with Path(filename).open('w', encoding='utf-8') as fp:
                     json.dump(parsed.notebook_content, fp, indent=1)
                     # Jupyter notebooks (.ipynb) always ends with a new line
                     # but json.dump does not.
@@ -103,13 +114,52 @@ class JupyterNotebookFixer(BaseFixer):
     default=r'\.git|\.tox|\.pytest_cache',
     help='Regex pattern to exclude files/directories',
 )
-def main(paths: tuple[str, ...], exclude: str) -> None:
-    """
-    Add blank lines after if/for/while/with/try blocks in Jupyter notebooks.
-    """
+@click.option(
+    '--after',
+    type=str,
+    help='Comma-separated list of block types to add blank lines after '
+         '(e.g., if,for,while,with,try,def,class,match,docstring)',
+)
+@click.option(
+    '--not-after',
+    type=str,
+    help='Add blank lines after all blocks EXCEPT these '
+         '(e.g., if,for - adds after everything except if and for)',
+)
+@click.option(
+    '--compound',
+    type=str,
+    default='',
+    help='Comma-separated list of compound headers to NOT add blank lines before '
+         '(e.g., elif,else,except,finally). Default: empty (consistent spacing)',
+)
+def main(
+    paths: tuple[str, ...],
+    exclude: str,
+    after: str | None,
+    not_after: str | None,
+    compound: str,
+) -> None:
+    """Add blank lines after blocks in Jupyter notebooks."""
+    # Validate mutual exclusivity
+    if after and not_after:
+        msg = '--after and --not-after are mutually exclusive'
+        raise click.BadParameter(msg)
+
+    # Parse comma-separated values
+    after_tuple = tuple(after.split(',')) if after else None
+    not_after_tuple = tuple(not_after.split(',')) if not_after else None
+    compound_tuple = tuple(compound.split(',')) if compound else ()
+
     ret = 0
     for path in paths:
-        fixer = JupyterNotebookFixer(path=path, exclude_pattern=exclude)
+        fixer = JupyterNotebookFixer(
+            path=path,
+            exclude_pattern=exclude,
+            after=after_tuple,
+            not_after=not_after_tuple,
+            compound=compound_tuple,
+        )
         ret |= fixer.fix_one_directory_or_one_file()
 
     if ret != 0:

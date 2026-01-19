@@ -36,8 +36,10 @@ def test_func():
     x, y = 1, 2
     if x < 5:
         print(x)
+
     elif y == 2:
         print(y)
+
     else:
         raise ValueError
 
@@ -76,6 +78,7 @@ def some_func(arg1: list, arg2: list) -> int:
         print(j)
 
     return 5
+
 if True:
     some_func([1, 2, 3], [2, 3])
 
@@ -89,6 +92,7 @@ def complex_func():
         while z > 0:
             print(z)
             z -= 1
+
     elif y == 2:
         print(y)
         for k in range(10):
@@ -97,6 +101,7 @@ def complex_func():
                 l += 2
 
             bb = 1
+
     else:
         raise ValueError
 
@@ -108,6 +113,7 @@ def simple_func():
     depth = 0
     if a == 'a':
         depth += 1
+
     elif b == 'b':
         depth -= 1
 

@@ -2,4 +2,4 @@
 
 import importlib.metadata
 
-__version__ = importlib.metadata.version('blank-line-after-blocks')
+__version__ = importlib.metadata.version('blank-line-after')

@@ -112,3 +112,6 @@ dmypy.json
 .idea/
 
 .DS_Store
+
+uv.lock
+.envrc
