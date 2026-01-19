@@ -88,8 +88,7 @@ def test_formatter_on_file(
             exit_code = e.code
 
         # Read the formatted content
-        with Path(temp_filename).open(encoding='utf-8') as f:
-            formatted_content = f.read()
+        formatted_content = Path(temp_filename).read_text(encoding='utf-8')
 
         # Get expected content
         expected_content = get_expected_content(filename)
@@ -141,13 +140,11 @@ def test_directory_processing_py(test_data_dir: Path) -> None:
             temp_file_path = Path(temp_dir) / before_file.name
             expected_file = test_data_dir / 'after' / before_file.name
 
-            with (
-                Path(temp_file_path).open(encoding='utf-8') as temp_f,
-                Path(expected_file).open(encoding='utf-8') as expected_f,
-            ):
-                assert temp_f.read() == expected_f.read(), (
-                    f'Directory processing failed for {before_file.name}'
-                )
+            temp_text = Path(temp_file_path).read_text(encoding='utf-8')
+            expected_text = Path(expected_file).read_text(encoding='utf-8')
+            assert temp_text == expected_text, (
+                f'Directory processing failed for {before_file.name}'
+            )
 
 
 def test_directory_processing_ipynb(test_data_dir: Path) -> None:
@@ -178,13 +175,11 @@ def test_directory_processing_ipynb(test_data_dir: Path) -> None:
             temp_file_path = Path(temp_dir) / before_file.name
             expected_file = test_data_dir / 'after' / before_file.name
 
-            with (
-                Path(temp_file_path).open(encoding='utf-8') as temp_f,
-                Path(expected_file).open(encoding='utf-8') as expected_f,
-            ):
-                assert temp_f.read() == expected_f.read(), (
-                    f'Directory processing failed for {before_file.name}'
-                )
+            temp_text = Path(temp_file_path).read_text(encoding='utf-8')
+            expected_text = Path(expected_file).read_text(encoding='utf-8')
+            assert temp_text == expected_text, (
+                f'Directory processing failed for {before_file.name}'
+            )
 
 
 def test_no_changes_files_return_zero(test_data_dir: Path) -> None:
@@ -213,8 +208,7 @@ def test_no_changes_files_return_zero(test_data_dir: Path) -> None:
             assert exit_code == 0, f'Expected no changes for {filename}'
 
             # Verify content is unchanged
-            with Path(temp_filename).open(encoding='utf-8') as f:
-                content = f.read()
+            content = Path(temp_filename).read_text(encoding='utf-8')
 
             assert content == before_file.read_text(), (
                 f'Content unexpectedly changed for {filename}'
@@ -252,8 +246,7 @@ def test_files_requiring_changes_return_one(test_data_dir: Path) -> None:
             assert exit_code == 1, f'Expected changes for {filename}'
 
             # Verify content actually changed
-            with Path(temp_filename).open(encoding='utf-8') as f:
-                content = f.read()
+            content = Path(temp_filename).read_text(encoding='utf-8')
 
             assert content != before_file.read_text(), (
                 f'Content should have changed for {filename}'
@@ -311,13 +304,11 @@ def test_multiple_files(test_data_dir: Path) -> None:
         # Verify each file was formatted correctly
         for i, filename in enumerate(filenames):
             expected_file = test_data_dir / 'after' / filename
-            with (
-                Path(temp_files[i]).open(encoding='utf-8') as temp_f,
-                Path(expected_file).open(encoding='utf-8') as expected_f,
-            ):
-                assert temp_f.read() == expected_f.read(), (
-                    f'Multiple file processing failed for {filename}'
-                )
+            temp_text = Path(temp_files[i]).read_text(encoding='utf-8')
+            expected_text = Path(expected_file).read_text(encoding='utf-8')
+            assert temp_text == expected_text, (
+                f'Multiple file processing failed for {filename}'
+            )
 
     finally:
         for temp_file in temp_files:

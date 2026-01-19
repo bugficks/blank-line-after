@@ -34,8 +34,9 @@ def test_fix_one_file_with_changes(fixer: PythonFileFixer) -> None:
         assert result == 1
 
         # Check that file was modified
-        with pathlib.Path(temp_filename).open(encoding='utf-8') as f:
-            modified_content = f.read()
+        modified_content = pathlib.Path(temp_filename).read_text(
+            encoding='utf-8'
+        )
 
         assert modified_content == expected_code
 
@@ -60,8 +61,7 @@ def test_fix_one_file_no_changes(fixer: PythonFileFixer) -> None:
         assert result == 0
 
         # Check that file was not modified
-        with pathlib.Path(temp_filename).open(encoding='utf-8') as f:
-            content = f.read()
+        content = pathlib.Path(temp_filename).read_text(encoding='utf-8')
 
         assert content == input_code
 
@@ -121,9 +121,7 @@ def test_main_argument_parsing(
         argv: list[str], expected_paths: list[str]
 ) -> None:
     """Test that main function parses arguments correctly."""
-    with patch(
-        'blank_line_after.main_py.PythonFileFixer'
-    ) as mock_fixer_cls:
+    with patch('blank_line_after.main_py.PythonFileFixer') as mock_fixer_cls:
         # Mock the fixer to return 0 (no changes)
         mock_fixer_instance = mock_fixer_cls.return_value
         mock_fixer_instance.fix_one_directory_or_one_file.return_value = 0
@@ -146,9 +144,7 @@ def test_main_argument_parsing(
 
 def test_main_returns_error_code() -> None:
     """Test that main raises SystemExit when changes are made."""
-    with patch(
-        'blank_line_after.main_py.PythonFileFixer'
-    ) as mock_fixer_cls:
+    with patch('blank_line_after.main_py.PythonFileFixer') as mock_fixer_cls:
         # Mock the fixer to return 1 (changes were made)
         mock_fixer_instance = mock_fixer_cls.return_value
         mock_fixer_instance.fix_one_directory_or_one_file.return_value = 1
@@ -162,9 +158,7 @@ def test_main_returns_error_code() -> None:
 
 def test_main_multiple_files_mixed_results() -> None:
     """Test main with multiple files where some have changes and some don't."""
-    with patch(
-        'blank_line_after.main_py.PythonFileFixer'
-    ) as mock_fixer_cls:
+    with patch('blank_line_after.main_py.PythonFileFixer') as mock_fixer_cls:
         # First file has changes (returns 1), second doesn't (returns 0)
         mock_fixer_instance = mock_fixer_cls.return_value
         mock_fixer_instance.fix_one_directory_or_one_file.side_effect = [1, 0]

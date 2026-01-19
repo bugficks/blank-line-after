@@ -79,7 +79,7 @@ from blank_line_after.main_py import main as main_py
             'def my_function():\n    return 42\nother_code()',
             'def my_function():\n    return 42\n\nother_code()',
             'Function definition',
-        ),        # Class definitions
+        ),  # Class definitions
         (
             (
                 'class MyClass:\n    def method(self):\n        pass\n'
@@ -99,7 +99,8 @@ from blank_line_after.main_py import main as main_py
             ),
             (
                 'while condition:\n    do_work()\n\nelse:\n'
-                                '    no_break_occurred()\n\nafter_while()'            ),
+                '    no_break_occurred()\n\nafter_while()'
+            ),
             'While loop with else clause',
         ),
         # For loop with else
@@ -202,8 +203,7 @@ if __name__ == "__main__":
         assert exit_code == 1  # Changes were made
 
         # Verify the file was modified correctly
-        with Path(temp_filename).open(encoding='utf-8') as f:
-            modified_content = f.read()
+        modified_content = Path(temp_filename).read_text(encoding='utf-8')
 
         assert modified_content == expected_output
 
@@ -235,8 +235,7 @@ print(result)
         assert exit_code == 0  # No changes were made
 
         # Verify the file was not modified
-        with Path(temp_filename).open(encoding='utf-8') as f:
-            content = f.read()
+        content = Path(temp_filename).read_text(encoding='utf-8')
 
         assert content == input_code
 
@@ -306,8 +305,7 @@ def test_syntax_error_handling() -> None:
         assert exit_code == 0
 
         # File should be unchanged
-        with Path(temp_filename).open(encoding='utf-8') as f:
-            content = f.read()
+        content = Path(temp_filename).read_text(encoding='utf-8')
 
         assert content == invalid_python
 

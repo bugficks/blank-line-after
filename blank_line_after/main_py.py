@@ -40,8 +40,7 @@ class PythonFileFixer(BaseFixer):
                 print(msg, file=sys.stderr)
                 return 0
 
-            with Path(filename).open('rb') as fb:
-                source_bytes = fb.read()
+            source_bytes = Path(filename).read_bytes()
 
         try:
             source_text_orig = source_text = source_bytes.decode()
@@ -61,8 +60,7 @@ class PythonFileFixer(BaseFixer):
             print(source_text, end='')
         elif source_text != source_text_orig:
             print(f'Rewriting {filename}', file=sys.stderr)
-            with Path(filename).open('wb') as f:
-                f.write(source_text.encode())
+            Path(filename).write_bytes(source_text.encode())
 
         return source_text != source_text_orig
 
@@ -80,27 +78,30 @@ class PythonFileFixer(BaseFixer):
     '--after',
     type=str,
     help='Comma-separated list of block types to add blank lines after '
-         '(e.g., if,for,while,with,try,def,class,match,docstring)',
+    '(e.g., if,for,while,with,try,def,class,match,docstring)',
 )
 @click.option(
     '--not-after',
     type=str,
     help='Add blank lines after all blocks EXCEPT these '
-         '(e.g., if,for - adds after everything except if and for)',
+    '(e.g., if,for - adds after everything except if and for)',
 )
 @click.option(
     '--compound',
     type=str,
     default='',
-    help='Comma-separated list of compound headers to NOT add blank lines before '
-         '(e.g., elif,else,except,finally). Default: empty (consistent spacing)',
+    help=(
+        'Comma-separated list of compound headers to NOT add blank lines '
+        'before (e.g., elif,else,except,finally). '
+        'Default: empty (consistent spacing)'
+    ),
 )
 def main(
-    paths: tuple[str, ...],
-    exclude: str,
-    after: str | None,
-    not_after: str | None,
-    compound: str,
+        paths: tuple[str, ...],
+        exclude: str,
+        after: str | None,
+        not_after: str | None,
+        compound: str,
 ) -> None:
     """Add blank lines after blocks in Python files."""
     # Validate mutual exclusivity

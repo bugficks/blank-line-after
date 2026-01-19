@@ -5,8 +5,8 @@ code in this repository.
 
 ## 1. Project Overview
 
-This is a Python formatter called `blank-line-after` that automatically
-adds blank lines after code blocks to improve readability. The tool is fully
+This is a Python formatter called `blank-line-after` that automatically adds
+blank lines after code blocks to improve readability. The tool is fully
 customizable with `--after`, `--not-after`, and `--compound` options to control
 which blocks are formatted and how compound statements are spaced.
 
@@ -45,7 +45,8 @@ The project supports both Python source files (.py) and Jupyter notebooks
 
 - Format Python files (default): `blank-line-after file1.py file2.py`
 - Format only specific blocks: `blank-line-after --after def,class file.py`
-- Add blank lines after docstrings: `blank-line-after --after docstring file.py`
+- Add blank lines after docstrings:
+  `blank-line-after --after docstring file.py`
 - Format all except specific blocks:
   `blank-line-after --not-after if,for file.py`
 - Keep compound statements tight:
@@ -71,6 +72,7 @@ The project supports both Python source files (.py) and Jupyter notebooks
      notebooks
 
 2. **Core Logic**: The actual formatting logic is in `helper.py`:
+
    - `fix_src()`: Main function that processes Python source code with optional
      `after`, `not_after`, and `compound` parameters
    - `KEYWORD_TO_AST`: Maps block keywords to AST node types
@@ -106,10 +108,12 @@ The project supports both Python source files (.py) and Jupyter notebooks
 Choose which blocks to format:
 
 1. **`--after`**: Only add blank lines after specific block types
+
    - Example: `--after if,for` (only if and for blocks)
    - Example: `--after def,class` (only function and class definitions)
 
 2. **`--not-after`**: Add blank lines after all blocks EXCEPT specified ones
+
    - Example: `--not-after if,for` (all blocks except if and for)
    - Mutually exclusive with `--after`
 

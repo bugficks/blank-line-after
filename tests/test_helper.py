@@ -184,9 +184,10 @@ def test_blocks_at_end_of_file() -> None:
                 '    handle_general()\nfinally:\n    cleanup()\nafter_try()'
             ),
             (
-'try:\n    risky()\nexcept ValueError:\n'
+                'try:\n    risky()\nexcept ValueError:\n'
                 '    handle_value_error()\nexcept Exception:\n'
-                '    handle_general()\nfinally:\n    cleanup()\n\nafter_try()'            ),
+                '    handle_general()\nfinally:\n    cleanup()\n\nafter_try()'
+            ),
         ),
         # Test for-else
         (

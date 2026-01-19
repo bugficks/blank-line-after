@@ -9,21 +9,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 - Added
-  - **`--after` option**: Specify exactly which block types to add blank lines after
-    (e.g., `--after if,for` or `--after def,class`)
-  - **`--not-after` option**: Add blank lines after all blocks EXCEPT the specified ones
-    (e.g., `--not-after if,for`)
+  - **`--after` option**: Specify exactly which block types to add blank lines
+    after (e.g., `--after if,for` or `--after def,class`)
+  - **`--not-after` option**: Add blank lines after all blocks EXCEPT the
+    specified ones (e.g., `--not-after if,for`)
   - **`--compound` option**: Control spacing before compound statement headers
     (e.g., `--compound elif,else,except,finally`)
-  - Support for `def` (function definitions) and `class` (class definitions) blocks
+  - Support for `def` (function definitions) and `class` (class definitions)
+    blocks
   - Support for `match` statements (Python 3.10+)
   - Support for `docstring` (module/function/class docstrings)
 - Changed
-  - **BREAKING**: Default behavior now adds blank lines after each branch in compound
-    statements (if/elif/else, try/except/finally) for consistent spacing. Use
-    `--compound elif,else,except,finally` to restore the previous tight grouping behavior.
+  - **BREAKING**: Default behavior now adds blank lines after each branch in
+    compound statements (if/elif/else, try/except/finally) for consistent
+    spacing. Use `--compound elif,else,except,finally` to restore the previous
+    tight grouping behavior.
   - `--after` and `--not-after` are mutually exclusive options
-  - `--compound` defaults to empty (consistent spacing) instead of excluding compound headers
+  - `--compound` defaults to empty (consistent spacing) instead of excluding
+    compound headers
 
 ## [0.1.5] - 2025-10-25
 

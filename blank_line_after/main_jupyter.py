@@ -118,27 +118,30 @@ class JupyterNotebookFixer(BaseFixer):
     '--after',
     type=str,
     help='Comma-separated list of block types to add blank lines after '
-         '(e.g., if,for,while,with,try,def,class,match,docstring)',
+    '(e.g., if,for,while,with,try,def,class,match,docstring)',
 )
 @click.option(
     '--not-after',
     type=str,
     help='Add blank lines after all blocks EXCEPT these '
-         '(e.g., if,for - adds after everything except if and for)',
+    '(e.g., if,for - adds after everything except if and for)',
 )
 @click.option(
     '--compound',
     type=str,
     default='',
-    help='Comma-separated list of compound headers to NOT add blank lines before '
-         '(e.g., elif,else,except,finally). Default: empty (consistent spacing)',
+    help=(
+        'Comma-separated list of compound headers to NOT add blank lines '
+        'before (e.g., elif,else,except,finally). '
+        'Default: empty (consistent spacing)'
+    ),
 )
 def main(
-    paths: tuple[str, ...],
-    exclude: str,
-    after: str | None,
-    not_after: str | None,
-    compound: str,
+        paths: tuple[str, ...],
+        exclude: str,
+        after: str | None,
+        not_after: str | None,
+        compound: str,
 ) -> None:
     """Add blank lines after blocks in Jupyter notebooks."""
     # Validate mutual exclusivity

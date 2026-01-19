@@ -1,21 +1,31 @@
 # Fork Notice
-This fork enhances the original `blank-line-after` tool. It introduces command-line options (`--after`, `--not-after`, `--compound`) for granular control over block formatting and extends support to `def`, `class`, `match` statements, and docstrings.
+
+This fork enhances the original `blank-line-after` tool. It introduces
+command-line options (`--after`, `--not-after`, `--compound`) for granular
+control over block formatting and extends support to `def`, `class`, `match`
+statements, and docstrings.
 
 **Breaking Changes:**
-*   The default behavior now adds blank lines after `docstring`, `def`, `class`, and `match` blocks, in addition to the original `if`, `for`, `while`, `with`, and `try` blocks.
-*   The default behavior for compound statements (like `if/elif/else`) has changed to add blank lines between each part for consistent spacing.
+
+- The default behavior now adds blank lines after `docstring`, `def`, `class`,
+  and `match` blocks, in addition to the original `if`, `for`, `while`, `with`,
+  and `try` blocks.
+- The default behavior for compound statements (like `if/elif/else`) has
+  changed to add blank lines between each part for consistent spacing.
 
 To restore the original behavior, use the following command:
+
 ```bash
 blank-line-after --not-after docstring,def,class,match --compound elif,else,except,finally <files>
 ```
 
----
+______________________________________________________________________
+
 # blank-line-after
 
-A Python formatter to automatically add blank lines after code blocks to improve
-readability. Fully customizable with `--after`, `--not-after`, and `--compound`
-options.
+A Python formatter to automatically add blank lines after code blocks to
+improve readability. Fully customizable with `--after`, `--not-after`, and
+`--compound` options.
 
 <!--TOC-->
 
@@ -23,19 +33,20 @@ ______________________________________________________________________
 
 **Table of Contents**
 
-- [1. Installation](#1-installation)
-- [2. Usage](#2-usage)
-  - [2.1. Command Line](#21-command-line)
-  - [2.2. Customization Options](#22-customization-options)
-  - [2.3. Pre-commit Hook](#23-pre-commit-hook)
-  - [2.4. Configuration File](#24-configuration-file)
-- [3. What it does](#3-what-it-does)
-- [4. Examples](#4-examples)
-  - [4.1. Default behavior](#41-default-behavior)
-  - [4.2. Custom block types with --after](#42-custom-block-types-with---after)
-  - [4.3. Exclude specific blocks with --not-after](#43-exclude-specific-blocks-with---not-after)
-  - [4.4. Control compound statement spacing with --compound](#44-control-compound-statement-spacing-with---compound)
-  - [4.5. Add blank lines after docstrings](#45-add-blank-lines-after-docstrings-with---after-docstring)
+- [blank-line-after](#blank-line-after)
+  - [1. Installation](#1-installation)
+  - [2. Usage](#2-usage)
+    - [2.1. Command Line](#21-command-line)
+    - [2.2. Customization Options](#22-customization-options)
+    - [2.3. Pre-commit Hook](#23-pre-commit-hook)
+    - [2.4. Configuration File](#24-configuration-file)
+  - [3. What it does](#3-what-it-does)
+  - [4. Examples](#4-examples)
+    - [4.1. Default behavior](#41-default-behavior)
+    - [4.2. Custom block types with --after](#42-custom-block-types-with---after)
+    - [4.3. Exclude specific blocks with --not-after](#43-exclude-specific-blocks-with---not-after)
+    - [4.4. Control compound statement spacing with --compound](#44-control-compound-statement-spacing-with---compound)
+    - [4.5. Add blank lines after docstrings with --after docstring](#45-add-blank-lines-after-docstrings-with---after-docstring)
 
 ______________________________________________________________________
 
@@ -84,12 +95,14 @@ blank-line-after --after def,class --compound elif,else file.py
 ```
 
 **Available block types for `--after`/`--not-after`:**
+
 - `if`, `for`, `while`, `with`, `try` (default blocks)
 - `def` (functions), `class` (classes)
 - `match` (Python 3.10+ match statements)
 - `docstring` (module/function/class docstrings)
 
 **Available compound headers for `--compound`:**
+
 - `elif`, `else`, `except`, `finally`
 
 ### 2.3. Pre-commit Hook
@@ -139,17 +152,20 @@ settings.
 
 ## 3. What it does
 
-By default, this tool adds one blank line after the end of `if`, `for`, `while`,
-`with`, and `try` blocks to improve code readability.
+By default, this tool adds one blank line after the end of `if`, `for`,
+`while`, `with`, and `try` blocks to improve code readability.
 
 **Key features:**
+
 - **Customizable**: Use `--after` to specify exactly which blocks to format
 - **Flexible**: Use `--not-after` to format all blocks except specific ones
 - **Consistent spacing**: By default, adds blank lines after each branch in
   compound statements (if/elif/else, try/except/finally) for consistency
-- **Compact mode**: Use `--compound` to keep compound statements tightly grouped
+- **Compact mode**: Use `--compound` to keep compound statements tightly
+  grouped
 
 The tool supports these block types:
+
 - Control flow: `if`, `for`, `while`, `with`, `try`
 - Definitions: `def` (functions), `class` (classes)
 - Pattern matching: `match` (Python 3.10+)

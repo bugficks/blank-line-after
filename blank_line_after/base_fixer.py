@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 from blank_line_after.helper import should_exclude_file
 
@@ -49,7 +48,6 @@ class BaseFixer:
 
         return 0 if not all_status or all_status == {0} else 1
 
-    @staticmethod
-    def fix_one_file(*varargs: Any, **kwargs: Any) -> int:
+    def fix_one_file(self, filename: str) -> int:
         """Fix formatting in a single file."""
         raise NotImplementedError('Please implement this method')
