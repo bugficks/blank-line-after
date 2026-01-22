@@ -10,8 +10,10 @@ def process_files(filenames):
                 data = json.load(f)
 
             results.append(data)
+
         except FileNotFoundError:
             print(f'File {filename} not found')
+
         except json.JSONDecodeError:
             print(f'Invalid JSON in {filename}')
 

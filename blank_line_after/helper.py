@@ -172,6 +172,15 @@ def _collect_blocks_to_fix(
         ):
             _add_end_lineno_from_body(node.body, blocks_to_fix)
             _add_end_lineno_from_body(node.orelse, blocks_to_fix)
+        # Handle try/except/else/finally blocks specially
+        elif isinstance(node, ast.Try):
+            _add_end_lineno_from_body(node.body, blocks_to_fix)
+            for handler in node.handlers:
+                _add_end_lineno_from_body(handler.body, blocks_to_fix)
+            if node.orelse:
+                _add_end_lineno_from_body(node.orelse, blocks_to_fix)
+            if node.finalbody:
+                _add_end_lineno_from_body(node.finalbody, blocks_to_fix)
         # For other blocks, add blank line after entire construct
         elif hasattr(node, 'end_lineno') and node.end_lineno is not None:
             blocks_to_fix.add(node.end_lineno)

@@ -18,6 +18,7 @@ def handle_errors():
             data = f.read()
 
         return data
+
     except FileNotFoundError:
         print('File not found')
         return None

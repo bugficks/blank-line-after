@@ -54,12 +54,14 @@ print(2)
 # Try/except blocks with nested if
 try:
     f = open('myfile.txt')
+
 except OSError as err:
     print(2)
     if True:
         b = 1
 
     b = 2
+
 except ValueError:
     print('asdf')
 
@@ -125,8 +127,10 @@ import sys
 for arg in ['test']:
     try:
         f = open(arg, 'w')
+
     except OSError:
         print('cannot open', arg)
+
     else:
         print(arg, 'opened successfully')
         for k in range(2):
@@ -137,6 +141,7 @@ for arg in ['test']:
 # Try/finally block
 try:
     pass
+
 finally:
     for kk in range(5):
         pass

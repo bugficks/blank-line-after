@@ -21,8 +21,10 @@ class DataProcessor:
 
                 except FileNotFoundError:
                     print(f"File not found: {item.get('file_path', 'unknown')}")
+
                 except Exception as e:
                     print(f'Error processing item: {e}')
+
                 finally:
                     item['processed'] = True
 
@@ -41,6 +43,7 @@ class DataProcessor:
                     'metadata': metadata
                 }
                 return result
+
             except Exception:
                 return None
 

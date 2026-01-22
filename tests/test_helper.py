@@ -43,7 +43,7 @@ from blank_line_after.helper import fix_src
                 '    handle_error()\nfinal_step()'
             ),
             (
-                'try:\n    risky_operation()\nexcept Exception:\n'
+                'try:\n    risky_operation()\n\nexcept Exception:\n'
                 '    handle_error()\n\nfinal_step()'
             ),
         ),
@@ -140,6 +140,7 @@ final_if_step()"""
             try:
                 data = f.read()
                 process(data)
+
             except IOError:
                 log_error()
 
@@ -184,9 +185,9 @@ def test_blocks_at_end_of_file() -> None:
                 '    handle_general()\nfinally:\n    cleanup()\nafter_try()'
             ),
             (
-                'try:\n    risky()\nexcept ValueError:\n'
-                '    handle_value_error()\nexcept Exception:\n'
-                '    handle_general()\nfinally:\n    cleanup()\n\nafter_try()'
+                'try:\n    risky()\n\nexcept ValueError:\n'
+                '    handle_value_error()\n\nexcept Exception:\n'
+                '    handle_general()\n\nfinally:\n    cleanup()\n\nafter_try()'
             ),
         ),
         # Test for-else

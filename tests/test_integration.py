@@ -43,9 +43,9 @@ from blank_line_after.main_py import main as main_py
                 'final_step()'
             ),
             (
-                'try:\n    risky_operation()\nexcept ValueError as e:\n'
-                '    handle_value_error(e)\nexcept Exception as e:\n'
-                '    handle_general_error(e)\nfinally:\n    cleanup()\n\n'
+                'try:\n    risky_operation()\n\nexcept ValueError as e:\n'
+                '    handle_value_error(e)\n\nexcept Exception as e:\n'
+                '    handle_general_error(e)\n\nfinally:\n    cleanup()\n\n'
                 'final_step()'
             ),
             'Try-except-finally block',
@@ -178,6 +178,7 @@ def main():
             data = f.read()
 
         process_data(data)
+
     except FileNotFoundError:
         print("File not found")
 
