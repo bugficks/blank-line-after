@@ -14,10 +14,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - **`--not-after` option**: Add blank lines after all blocks EXCEPT the
     specified ones (e.g., `--not-after if,for`)
   - **`--compound` option**: Control spacing before compound statement headers
-    (e.g., `--compound elif,else,except,finally`)
+    (e.g., `--compound elif,else,except,finally,case`)
   - Support for `def` (function definitions) and `class` (class definitions)
     blocks
-  - Support for `match` statements (Python 3.10+)
+  - Support for `match` statements (Python 3.10+) with blank lines after each
+    `case` block by default. Use `--compound case` to keep case blocks tightly
+    grouped.
   - Support for `docstring` (module/function/class docstrings)
 - Changed
   - **BREAKING**: Default behavior now adds blank lines after each branch in

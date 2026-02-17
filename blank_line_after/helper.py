@@ -26,6 +26,7 @@ KEYWORD_TO_HEADERS = {
     'else': 'else:',
     'except': 'except',
     'finally': 'finally:',
+    'case': 'case ',
 }
 
 DEFAULT_BLOCKS = (
@@ -181,6 +182,10 @@ def _collect_blocks_to_fix(
                 _add_end_lineno_from_body(node.orelse, blocks_to_fix)
             if node.finalbody:
                 _add_end_lineno_from_body(node.finalbody, blocks_to_fix)
+        # Handle match/case blocks specially (Python 3.10+)
+        elif hasattr(ast, 'Match') and isinstance(node, ast.Match):
+            for case in node.cases:
+                _add_end_lineno_from_body(case.body, blocks_to_fix)
         # For other blocks, add blank line after entire construct
         elif hasattr(node, 'end_lineno') and node.end_lineno is not None:
             blocks_to_fix.add(node.end_lineno)

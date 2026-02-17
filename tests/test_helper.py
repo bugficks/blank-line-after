@@ -261,6 +261,150 @@ after_loop()"""
     assert result == expected
 
 
+@pytest.mark.parametrize(
+    ('input_code', 'expected_output'),
+    [
+        # Basic match statement
+        (
+            (
+                'match value:\n'
+                '    case 1:\n'
+                '        do_one()\n'
+                '    case 2:\n'
+                '        do_two()\n'
+                'after_match()'
+            ),
+            (
+                'match value:\n'
+                '    case 1:\n'
+                '        do_one()\n'
+                '\n'
+                '    case 2:\n'
+                '        do_two()\n'
+                '\n'
+                'after_match()'
+            ),
+        ),
+        # Match with pattern matching
+        (
+            (
+                'match cat:\n'
+                '    case DeviceCategory.BPM | DeviceCategory.SPHYGMO:\n'
+                '        return "SPHYGMO"\n'
+                '    case DeviceCategory.SCALE | DeviceCategory.INNERSCAN:\n'
+                '        return "INNERSCAN"\n'
+                'next_line()'
+            ),
+            (
+                'match cat:\n'
+                '    case DeviceCategory.BPM | DeviceCategory.SPHYGMO:\n'
+                '        return "SPHYGMO"\n'
+                '\n'
+                '    case DeviceCategory.SCALE | DeviceCategory.INNERSCAN:\n'
+                '        return "INNERSCAN"\n'
+                '\n'
+                'next_line()'
+            ),
+        ),
+        # Match with default case
+        (
+            (
+                'match status:\n'
+                '    case 200:\n'
+                '        success()\n'
+                '    case 404:\n'
+                '        not_found()\n'
+                '    case _:\n'
+                '        default_handler()\n'
+                'done()'
+            ),
+            (
+                'match status:\n'
+                '    case 200:\n'
+                '        success()\n'
+                '\n'
+                '    case 404:\n'
+                '        not_found()\n'
+                '\n'
+                '    case _:\n'
+                '        default_handler()\n'
+                '\n'
+                'done()'
+            ),
+        ),
+    ],
+)
+def test_match_statements(input_code: str, expected_output: str) -> None:
+    """Test match/case statements (Python 3.10+)."""
+    result = fix_src(input_code)
+    assert result == expected_output
+
+
+def test_match_with_compound_case() -> None:
+    """Test match/case with --compound case option keeps cases tight."""
+    input_code = """match value:
+    case 1:
+        do_one()
+    case 2:
+        do_two()
+    case 3:
+        do_three()
+final_step()"""
+
+    expected = """match value:
+    case 1:
+        do_one()
+    case 2:
+        do_two()
+    case 3:
+        do_three()
+
+final_step()"""
+
+    result = fix_src(input_code, compound=('case',))
+    assert result == expected
+
+
+def test_match_excluded_with_not_after() -> None:
+    """Test that match can be excluded with --not-after match."""
+    input_code = """match value:
+    case 1:
+        do_one()
+    case 2:
+        do_two()
+next_line()"""
+
+    # When 'match' is in not_after, no blank lines are added
+    result = fix_src(input_code, not_after=('match',))
+    assert result == input_code
+
+
+def test_match_with_after_match_only() -> None:
+    """Test --after match adds blank lines only after match statements."""
+    input_code = """if condition:
+    do_something()
+match value:
+    case 1:
+        do_one()
+    case 2:
+        do_two()
+final()"""
+
+    expected = """if condition:
+    do_something()
+match value:
+    case 1:
+        do_one()
+
+    case 2:
+        do_two()
+
+final()"""
+
+    result = fix_src(input_code, after=('match',))
+    assert result == expected
+
+
 def test_flake8_clean_block_cases() -> None:
     """
     Test comprehensive cases from flake8-clean-block project using test data

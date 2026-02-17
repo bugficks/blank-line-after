@@ -47,6 +47,7 @@ ______________________________________________________________________
     - [4.3. Exclude specific blocks with --not-after](#43-exclude-specific-blocks-with---not-after)
     - [4.4. Control compound statement spacing with --compound](#44-control-compound-statement-spacing-with---compound)
     - [4.5. Add blank lines after docstrings with --after docstring](#45-add-blank-lines-after-docstrings-with---after-docstring)
+    - [4.6. Match/case statements (Python 3.10+)](#46-matchcase-statements-python-310)
 
 ______________________________________________________________________
 
@@ -103,7 +104,7 @@ blank-line-after --after def,class --compound elif,else file.py
 
 **Available compound headers for `--compound`:**
 
-- `elif`, `else`, `except`, `finally`
+- `elif`, `else`, `except`, `finally`, `case`
 
 ### 2.3. Pre-commit Hook
 
@@ -304,4 +305,40 @@ blank-line-after --after docstring file.py
 +
       def method(self):
           pass
+```
+
+### 4.6. Match/case statements (Python 3.10+)
+
+Default behavior adds blank lines after each `case` block:
+
+```diff
+  match status:
+      case 200:
+          success()
++
+      case 404:
+          not_found()
++
+      case _:
+          default()
++
+  done()
+```
+
+Keep `case` blocks tightly grouped with `--compound case`:
+
+```bash
+blank-line-after --compound case file.py
+```
+
+```diff
+  match status:
+      case 200:
+          success()
+      case 404:
+          not_found()
+      case _:
+          default()
++
+  done()
 ```
