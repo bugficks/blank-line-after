@@ -1,6 +1,6 @@
 # Fork Notice
 
-This fork enhances the original `blank-line-after` tool. It introduces
+This fork enhances the original `blank-line-after-blocks` tool. It introduces
 command-line options (`--after`, `--not-after`, `--compound`) for granular
 control over block formatting and extends support to `def`, `class`, `match`
 statements, and docstrings.
@@ -48,6 +48,7 @@ ______________________________________________________________________
     - [4.4. Control compound statement spacing with --compound](#44-control-compound-statement-spacing-with---compound)
     - [4.5. Add blank lines after docstrings with --after docstring](#45-add-blank-lines-after-docstrings-with---after-docstring)
     - [4.6. Match/case statements (Python 3.10+)](#46-matchcase-statements-python-310)
+    - [4.7. Async statements](#47-async-statements)
 
 ______________________________________________________________________
 
@@ -97,8 +98,8 @@ blank-line-after --after def,class --compound elif,else file.py
 
 **Available block types for `--after`/`--not-after`:**
 
-- `if`, `for`, `while`, `with`, `try` (default blocks)
-- `def` (functions), `class` (classes)
+- `if`, `for`, `while`, `with`, `try` (default blocks, includes `async for` and `async with`)
+- `def` (functions, includes `async def`), `class` (classes)
 - `match` (Python 3.10+ match statements)
 - `docstring` (module/function/class docstrings)
 
@@ -341,4 +342,19 @@ blank-line-after --compound case file.py
           default()
 +
   done()
+```
+
+### 4.7. Async statements
+
+Async variants of `for` and `with` are automatically supported:
+
+```diff
+  async def process_items():
+      async for item in async_iterator:
+          await handle(item)
++
+      async with aiofiles.open("file.txt") as f:
+          content = await f.read()
++
+      done()
 ```

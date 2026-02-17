@@ -428,3 +428,69 @@ def test_flake8_clean_block_cases() -> None:
     assert result == expected_output, (
         'Failed to properly format flake8-clean-block test cases'
     )
+
+
+@pytest.mark.parametrize(
+    ('input_code', 'expected_output'),
+    [
+        # async for loop
+        (
+            (
+                'async def main():\n'
+                '    async for item in async_iterator:\n'
+                '        await process(item)\n'
+                '    final_step()'
+            ),
+            (
+                'async def main():\n'
+                '    async for item in async_iterator:\n'
+                '        await process(item)\n'
+                '\n'
+                '    final_step()'
+            ),
+        ),
+        # async with statement
+        (
+            (
+                'async def main():\n'
+                '    async with aiofiles.open("file.txt") as f:\n'
+                '        content = await f.read()\n'
+                '    process(content)'
+            ),
+            (
+                'async def main():\n'
+                '    async with aiofiles.open("file.txt") as f:\n'
+                '        content = await f.read()\n'
+                '\n'
+                '    process(content)'
+            ),
+        ),
+        # async for-else
+        (
+            (
+                'async def search():\n'
+                '    async for item in items:\n'
+                '        if found(item):\n'
+                '            break\n'
+                '    else:\n'
+                '        not_found()\n'
+                '    after_loop()'
+            ),
+            (
+                'async def search():\n'
+                '    async for item in items:\n'
+                '        if found(item):\n'
+                '            break\n'
+                '\n'
+                '    else:\n'
+                '        not_found()\n'
+                '\n'
+                '    after_loop()'
+            ),
+        ),
+    ],
+)
+def test_async_statements(input_code: str, expected_output: str) -> None:
+    """Test async for and async with statements."""
+    result = fix_src(input_code)
+    assert result == expected_output

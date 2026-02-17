@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 # Mapping of keywords to AST node types
 KEYWORD_TO_AST = {
     'if': (ast.If,),
-    'for': (ast.For,),
+    'for': (ast.For, ast.AsyncFor),
     'while': (ast.While,),
-    'with': (ast.With,),
+    'with': (ast.With, ast.AsyncWith),
     'try': (ast.Try,),
     'def': (ast.FunctionDef, ast.AsyncFunctionDef),
     'class': (ast.ClassDef,),
@@ -165,9 +165,9 @@ def _collect_blocks_to_fix(
                 and not isinstance(node.orelse[0], ast.If)
             ):
                 _add_end_lineno_from_body(node.orelse, blocks_to_fix)
-        # Handle compound statements (for-else, while-else) specially
+        # Handle compound statements (for-else, while-else, async for-else) specially
         elif (
-            isinstance(node, ast.For | ast.While)
+            isinstance(node, ast.For | ast.AsyncFor | ast.While)
             and hasattr(node, 'orelse')
             and node.orelse
         ):

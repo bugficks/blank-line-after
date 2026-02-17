@@ -21,6 +21,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     `case` block by default. Use `--compound case` to keep case blocks tightly
     grouped.
   - Support for `docstring` (module/function/class docstrings)
+  - Support for `async for` and `async with` statements (automatically included
+    with `for` and `with` keywords)
 - Changed
   - **BREAKING**: Default behavior now adds blank lines after each branch in
     compound statements (if/elif/else, try/except/finally) for consistent
